@@ -2,136 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="EvoMind AI - Your personal AI learning companion"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>EvoMind AI</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body data-theme="dark">
 
-<!-- =========================
-     APP
-========================= -->
-
-<div class="app">
-
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
+    <!-- ================= SIDEBAR ================= -->
 
     <aside class="sidebar" id="sidebar">
 
-        <div class="sidebar-top">
+        <div class="logo">
+            <div class="logo-icon">E</div>
 
-            <div class="brand">
-
-                <div class="brand-logo">E</div>
-
-                <div>
-                    <h2>EvoMind</h2>
-                    <p>AI Learning Companion</p>
-                </div>
-
+            <div>
+                <h2>EvoMind</h2>
+                <span>AI Learning Companion</span>
             </div>
-
-            <button
-                class="new-journey-btn"
-                onclick="openJourneyModal()"
-            >
-                <span>+</span>
-                New Journey
-            </button>
-
         </div>
-
 
         <nav class="navigation">
 
-            <button
-                class="nav-item active"
-                data-page="home"
-                onclick="showPage('home')"
-            >
-                <span class="nav-icon">⌂</span>
-                <span>Home</span>
+            <button class="nav-item active" onclick="showPage('home', this)">
+                <span>⌂</span>
+                Home
             </button>
 
-
-            <button
-                class="nav-item"
-                data-page="mentor"
-                onclick="showPage('mentor')"
-            >
-                <span class="nav-icon">✦</span>
-                <span>AI Mentor</span>
+            <button class="nav-item" onclick="showPage('mentor', this)">
+                <span>✦</span>
+                AI Mentor
             </button>
 
-
-            <button
-                class="nav-item"
-                data-page="journeys"
-                onclick="showPage('journeys')"
-            >
-                <span class="nav-icon">◇</span>
-                <span>My Journeys</span>
+            <button class="nav-item" onclick="showPage('journeys', this)">
+                <span>◎</span>
+                My Journeys
             </button>
 
-
-            <button
-                class="nav-item"
-                data-page="tasks"
-                onclick="showPage('tasks')"
-            >
-                <span class="nav-icon">✓</span>
-                <span>Tasks</span>
+            <button class="nav-item" onclick="showPage('tasks', this)">
+                <span>✓</span>
+                Tasks
             </button>
 
-
-            <button
-                class="nav-item"
-                data-page="history"
-                onclick="showPage('history')"
-            >
-                <span class="nav-icon">◷</span>
-                <span>History</span>
+            <button class="nav-item" onclick="showPage('history', this)">
+                <span>◷</span>
+                History
             </button>
 
         </nav>
 
-
-        <!-- STREAK -->
-
         <div class="sidebar-bottom">
 
-            <div class="streak-card">
-
-                <div class="streak-icon">🔥</div>
-
-                <div>
-                    <strong id="sidebarStreak">1 day</strong>
-                    <span>Learning streak</span>
-                </div>
-
-            </div>
-
-
-            <button
-                class="appearance-btn"
-                onclick="toggleTheme()"
-            >
-                <span>☾</span>
-                <span>Appearance</span>
+            <button class="appearance-btn" onclick="toggleTheme()">
+                <span>◐</span>
+                Appearance
             </button>
 
         </div>
@@ -139,106 +65,62 @@
     </aside>
 
 
-    <!-- =========================
-         MAIN
-    ========================== -->
+    <!-- ================= MAIN ================= -->
 
-    <main class="main">
+    <main class="main-content">
 
         <!-- TOP BAR -->
 
         <header class="topbar">
 
-            <button
-                class="menu-btn"
-                onclick="toggleSidebar()"
-                aria-label="Open menu"
-            >
+            <button class="menu-btn" onclick="toggleSidebar()">
                 ☰
             </button>
 
+            <div class="topbar-title">
+                <span id="pageTitle">Home</span>
+            </div>
 
-            <div class="topbar-spacer"></div>
-
-
-            <div class="profile-avatar">N</div>
+            <div class="profile">
+                <div class="profile-avatar">N</div>
+            </div>
 
         </header>
 
 
-        <!-- =========================
-             HOME PAGE
-        ========================== -->
+        <!-- ================= HOME PAGE ================= -->
 
-        <section
-            class="page active-page"
-            id="page-home"
-        >
+        <section class="page active" id="home">
 
             <div class="hero">
 
-                <div class="eyebrow">
-                    ✨ YOUR PERSONAL LEARNING COMPANION
-                </div>
+                <div class="hero-content">
 
-                <h1>
-                    Learn smarter.<br>
-                    <span>Grow faster.</span>
-                </h1>
+                    <span class="badge">
+                        ✦ Your personal AI learning companion
+                    </span>
 
-                <p>
-                    EvoMind helps you turn your learning goals
-                    into clear journeys, practical tasks and
-                    consistent progress.
-                </p>
+                    <h1>
+                        Learn smarter.<br>
+                        <span>Grow faster.</span>
+                    </h1>
 
+                    <p>
+                        EvoMind helps you turn your learning goals into
+                        clear journeys, practical tasks and consistent progress.
+                    </p>
 
-                <div class="hero-buttons">
-
-                    <button
-                        class="primary-btn"
-                        onclick="openJourneyModal()"
-                    >
+                    <button class="primary-btn" onclick="openJourneyModal()">
                         Start My Journey
                         <span>→</span>
                     </button>
 
-
-                    <button
-                        class="secondary-btn"
-                        onclick="showPage('mentor')"
-                    >
-                        Explore EvoMind
-                    </button>
-
                 </div>
 
-            </div>
-
-
-            <!-- VISUAL -->
-
-            <div class="mind-visual">
-
-                <div class="orbit orbit-one"></div>
-                <div class="orbit orbit-two"></div>
-                <div class="orbit orbit-three"></div>
-
-                <div class="mind-core">E</div>
-
-                <div class="orbit-label label-goal">
-                    🎯<br>
-                    Goals
-                </div>
-
-                <div class="orbit-label label-streak">
-                    🔥<br>
-                    Streak
-                </div>
-
-                <div class="orbit-label label-progress">
-                    ✓<br>
-                    Progress
+                <div class="hero-visual">
+                    <div class="brain">
+                        🧠
+                    </div>
                 </div>
 
             </div>
@@ -249,121 +131,93 @@
             <div class="stats-grid">
 
                 <div class="stat-card">
-
-                    <div class="stat-icon">🎯</div>
+                    <div class="stat-icon">◎</div>
 
                     <div>
+                        <strong id="journeyCount">0</strong>
                         <span>Journeys</span>
-                        <strong id="homeJourneys">0</strong>
                     </div>
-
                 </div>
 
-
                 <div class="stat-card">
-
                     <div class="stat-icon">✓</div>
 
                     <div>
+                        <strong id="taskCount">0</strong>
                         <span>Tasks Done</span>
-                        <strong id="homeTasksDone">0</strong>
                     </div>
-
                 </div>
 
-
                 <div class="stat-card">
-
                     <div class="stat-icon">🔥</div>
 
                     <div>
-                        <span>Current Streak</span>
-                        <strong id="homeStreak">1</strong>
+                        <strong id="streakCount">0</strong>
+                        <span>Day Streak</span>
                     </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-icon">💬</div>
-
-                    <div>
-                        <span>AI Messages</span>
-                        <strong id="homeMessages">0</strong>
-                    </div>
-
                 </div>
 
             </div>
 
 
-            <!-- GET STARTED -->
+            <!-- QUICK START -->
 
             <div class="section-heading">
 
-                <span>GET STARTED</span>
-
-                <h2>What do you want to do?</h2>
+                <div>
+                    <h2>Quick Start</h2>
+                    <p>What would you like to do today?</p>
+                </div>
 
             </div>
 
 
-            <div class="action-grid">
+            <div class="quick-grid">
 
-                <button
-                    class="action-card"
-                    onclick="showPage('mentor')"
-                >
+                <button class="quick-card" onclick="showPage('mentor')">
 
-                    <div class="action-icon">✦</div>
+                    <div class="quick-icon">✦</div>
 
-                    <div>
-                        <h3>Ask EvoMind</h3>
-                        <p>
-                            Get help with any learning question.
-                        </p>
-                    </div>
+                    <h3>Ask AI Mentor</h3>
 
-                    <span class="arrow">→</span>
+                    <p>
+                        Get help with concepts, coding,
+                        study plans and more.
+                    </p>
+
+                    <span>Ask something →</span>
 
                 </button>
 
 
-                <button
-                    class="action-card"
-                    onclick="openJourneyModal()"
-                >
+                <button class="quick-card" onclick="openJourneyModal()">
 
-                    <div class="action-icon">🎯</div>
+                    <div class="quick-icon">◎</div>
 
-                    <div>
-                        <h3>Create a Journey</h3>
-                        <p>
-                            Turn your goal into a learning roadmap.
-                        </p>
-                    </div>
+                    <h3>Create Journey</h3>
 
-                    <span class="arrow">→</span>
+                    <p>
+                        Turn a big learning goal into
+                        a simple step-by-step journey.
+                    </p>
+
+                    <span>Create journey →</span>
 
                 </button>
 
 
-                <button
-                    class="action-card"
-                    onclick="showPage('tasks')"
-                >
+                <button class="quick-card" onclick="showPage('tasks')">
 
-                    <div class="action-icon">✓</div>
+                    <div class="quick-icon">✓</div>
 
-                    <div>
-                        <h3>Manage Tasks</h3>
-                        <p>
-                            Track small steps toward your goal.
-                        </p>
-                    </div>
+                    <h3>View Tasks</h3>
 
-                    <span class="arrow">→</span>
+                    <p>
+                        Check your learning tasks and
+                        keep your progress moving.
+                    </p>
+
+                    <span>View tasks →</span>
 
                 </button>
 
@@ -372,117 +226,80 @@
         </section>
 
 
-        <!-- =========================
-             AI MENTOR
-        ========================== -->
+        <!-- ================= AI MENTOR ================= -->
 
-        <section
-            class="page"
-            id="page-mentor"
-        >
+        <section class="page" id="mentor">
 
             <div class="page-header">
 
-                <div class="eyebrow">
-                    AI MENTOR
-                </div>
+                <span class="page-badge">✦ AI MENTOR</span>
 
-                <h1>Talk to EvoMind</h1>
+                <h1>Your AI Learning Mentor</h1>
 
                 <p>
-                    Ask questions, learn concepts, plan your
-                    studies, or get unstuck.
+                    Ask questions, understand difficult concepts,
+                    create study plans and prepare for interviews.
                 </p>
 
             </div>
 
 
-            <div class="mentor-box">
+            <div class="mentor-container">
 
-                <div class="mentor-top">
+                <div class="chat-area" id="chatArea">
 
-                    <div class="brand-logo small">E</div>
+                    <div class="welcome-message">
 
-                    <div>
-                        <strong>EvoMind</strong>
-                        <span>AI Learning Mentor</span>
+                        <div class="mentor-avatar">✦</div>
+
+                        <div>
+                            <h3>Hi! I'm EvoMind 👋</h3>
+
+                            <p>
+                                I'm here to help you learn.
+                                What would you like to work on today?
+                            </p>
+                        </div>
+
                     </div>
 
-                    <button
-                        class="clear-btn"
-                        onclick="clearChat()"
-                    >
-                        Clear Chat
+                </div>
+
+
+                <div class="suggestions">
+
+                    <button onclick="useSuggestion('Explain JavaScript in simple words')">
+                        Explain JavaScript simply
+                    </button>
+
+                    <button onclick="useSuggestion('Make me a study plan for today')">
+                        Make a study plan
+                    </button>
+
+                    <button onclick="useSuggestion('Help me prepare for a coding interview')">
+                        Prepare for interview
+                    </button>
+
+                    <button onclick="useSuggestion('Explain linked list with an example')">
+                        Explain a coding concept
                     </button>
 
                 </div>
 
 
-                <div
-                    class="chat-area"
-                    id="chatArea"
-                >
-
-                    <div class="message ai-message">
-
-                        <div class="message-avatar">
-                            E
-                        </div>
-
-                        <div class="message-content">
-
-                            <strong>Hey! I'm EvoMind 👋</strong>
-
-                            <p>
-                                Tell me what you're learning or
-                                what you're struggling with, and
-                                I'll help you move forward.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="suggestions">
-
-                        <button
-                            onclick="useSuggestion('Explain JavaScript simply')"
-                        >
-                            Explain JavaScript simply
-                        </button>
-
-                        <button
-                            onclick="useSuggestion('Make me a study plan')"
-                        >
-                            Make me a study plan
-                        </button>
-
-                        <button
-                            onclick="useSuggestion('Help me prepare for an interview')"
-                        >
-                            Help me prepare for an interview
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <div class="chat-input-box">
+                <div class="chat-input-area">
 
                     <textarea
                         id="chatInput"
                         placeholder="Ask EvoMind anything..."
                         rows="1"
-                        onkeydown="handleChatKey(event)"
                     ></textarea>
 
                     <button
                         class="send-btn"
                         onclick="sendMessage()"
                     >
-                        ↑
+                        ➤
                     </button>
 
                 </div>
@@ -492,29 +309,27 @@
         </section>
 
 
-        <!-- =========================
-             JOURNEYS
-        ========================== -->
+        <!-- ================= JOURNEYS ================= -->
 
-        <section
-            class="page"
-            id="page-journeys"
-        >
+        <section class="page" id="journeys">
 
             <div class="page-header">
 
-                <div class="eyebrow">
-                    YOUR PROGRESS
-                </div>
+                <span class="page-badge">◎ LEARNING JOURNEYS</span>
 
                 <h1>My Journeys</h1>
 
                 <p>
-                    Build and track your personal learning goals.
+                    Build structured learning paths for your goals.
                 </p>
 
+            </div>
+
+
+            <div class="journey-toolbar">
+
                 <button
-                    class="primary-btn small-btn"
+                    class="primary-btn"
                     onclick="openJourneyModal()"
                 >
                     + New Journey
@@ -523,223 +338,184 @@
             </div>
 
 
-            <div
-                class="journey-list"
-                id="journeyList"
-            ></div>
-
-        </section>
-
-
-        <!-- =========================
-             TASKS
-        ========================== -->
-
-        <section
-            class="page"
-            id="page-tasks"
-        >
-
-            <div class="page-header">
-
-                <div class="eyebrow">
-                    DAILY PROGRESS
-                </div>
-
-                <h1>My Tasks</h1>
-
-                <p>
-                    Small steps create big progress.
-                </p>
-
-            </div>
-
-
-            <div class="tasks-box">
-
-                <div class="tasks-header">
-
-                    <h2>Today's Tasks</h2>
-
-                    <span id="taskPercent">
-                        0% complete
-                    </span>
-
-                </div>
-
-
-                <div class="progress-bar">
-                    <div
-                        class="progress-fill"
-                        id="taskProgress"
-                    ></div>
-                </div>
-
-
-                <div id="taskList"></div>
-
-            </div>
-
-
-            <div class="motivation-card">
-
-                <div class="big-fire">🔥</div>
-
-                <h2>Keep going!</h2>
-
-                <p>
-                    Consistency beats intensity. One small step
-                    today is better than waiting for the perfect day.
-                </p>
-
-                <strong id="taskStreak">
-                    1 day streak
-                </strong>
+            <div class="journeys-grid" id="journeysGrid">
 
             </div>
 
         </section>
 
 
-        <!-- =========================
-             HISTORY
-        ========================== -->
+        <!-- ================= TASKS ================= -->
 
-        <section
-            class="page"
-            id="page-history"
-        >
+        <section class="page" id="tasks">
 
             <div class="page-header">
 
-                <div class="eyebrow">
-                    YOUR ACTIVITY
-                </div>
+                <span class="page-badge">✓ TASKS</span>
 
-                <h1>History</h1>
+                <h1>Learning Tasks</h1>
 
                 <p>
-                    Your recent EvoMind activity.
+                    Small steps today create big progress tomorrow.
                 </p>
-
-                <button
-                    class="secondary-btn clear-history-btn"
-                    onclick="clearHistory()"
-                >
-                    Clear History
-                </button>
 
             </div>
 
 
-            <div
-                class="history-list"
-                id="historyList"
-            ></div>
+            <div class="task-summary">
+
+                <div>
+                    <strong id="completedTasks">0</strong>
+                    <span>Completed</span>
+                </div>
+
+                <div>
+                    <strong id="pendingTasks">0</strong>
+                    <span>Remaining</span>
+                </div>
+
+            </div>
+
+
+            <div class="tasks-container" id="tasksContainer">
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= HISTORY ================= -->
+
+        <section class="page" id="history">
+
+            <div class="page-header">
+
+                <span class="page-badge">◷ HISTORY</span>
+
+                <h1>Learning History</h1>
+
+                <p>
+                    See your recent learning activity.
+                </p>
+
+            </div>
+
+
+            <div class="history-container" id="historyContainer">
+
+            </div>
 
         </section>
 
     </main>
 
-</div>
+
+    <!-- ================= JOURNEY MODAL ================= -->
+
+    <div class="modal-overlay" id="journeyModal">
+
+        <div class="modal">
+
+            <button
+                class="modal-close"
+                onclick="closeJourneyModal()"
+            >
+                ×
+            </button>
+
+            <div class="modal-icon">
+                ◎
+            </div>
+
+            <h2>Create Learning Journey</h2>
+
+            <p>
+                What do you want to learn?
+            </p>
 
 
-<!-- =========================
-     JOURNEY MODAL
-========================= -->
+            <form onsubmit="createJourney(event)">
 
-<div
-    class="modal-overlay"
-    id="journeyModal"
-    onclick="closeModalOutside(event)"
->
+                <label>
+                    Learning Goal
+                </label>
 
-    <div class="journey-modal">
-
-        <button
-            class="modal-close"
-            onclick="closeJourneyModal()"
-        >
-            ×
-        </button>
+                <input
+                    type="text"
+                    id="journeyGoal"
+                    placeholder="e.g. Learn JavaScript"
+                    required
+                >
 
 
-        <div class="eyebrow">
-            NEW LEARNING JOURNEY
+                <label>
+                    Your Level
+                </label>
+
+                <select id="journeyLevel">
+
+                    <option value="Beginner">
+                        Beginner
+                    </option>
+
+                    <option value="Intermediate">
+                        Intermediate
+                    </option>
+
+                    <option value="Advanced">
+                        Advanced
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Daily Study Time
+                </label>
+
+                <select id="studyTime">
+
+                    <option value="30 minutes">
+                        30 minutes
+                    </option>
+
+                    <option value="1 hour">
+                        1 hour
+                    </option>
+
+                    <option value="2 hours">
+                        2 hours
+                    </option>
+
+                    <option value="3+ hours">
+                        3+ hours
+                    </option>
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="primary-btn full-btn"
+                >
+                    Create Journey →
+                </button>
+
+            </form>
+
         </div>
-
-        <h2>Create your journey</h2>
-
-        <p class="modal-subtitle">
-            What do you want to learn or achieve?
-        </p>
-
-
-        <label for="goalInput">
-            Goal
-        </label>
-
-        <input
-            id="goalInput"
-            type="text"
-            placeholder="e.g. Become a frontend developer"
-        >
-
-
-        <label for="categoryInput">
-            Category
-        </label>
-
-        <select id="categoryInput">
-
-            <option>Programming</option>
-            <option>Web Development</option>
-            <option>Data Science</option>
-            <option>AI & Machine Learning</option>
-            <option>Design</option>
-            <option>Business</option>
-            <option>Career</option>
-            <option>Other</option>
-
-        </select>
-
-
-        <label for="timeInput">
-            Daily time
-        </label>
-
-        <select id="timeInput">
-
-            <option value="15">15 minutes</option>
-            <option value="30" selected>30 minutes</option>
-            <option value="45">45 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="90">90 minutes</option>
-
-        </select>
-
-
-        <button
-            class="primary-btn create-btn"
-            onclick="createJourney()"
-        >
-            Create Journey
-        </button>
 
     </div>
 
-</div>
+
+    <!-- ================= TOAST ================= -->
+
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
 
 
-<!-- TOAST -->
-
-<div
-    class="toast"
-    id="toast"
-></div>
-
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 </html>
