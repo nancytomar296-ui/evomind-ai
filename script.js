@@ -1,1532 +1,1560 @@
-/* =====================================================
-   EvoMind AI
-   Frontend Application
-===================================================== */
+/* =========================================
+   EvoMind AI - Main JavaScript
+   ========================================= */
+
+// ===============================
+// BACKEND
+// ===============================
+
+const BACKEND_URL =
+  "https://evomind-ai-server-new.onrender.com";
 
 
-/* =====================================================
-   DEFAULT DATA
-===================================================== */
+// ===============================
+// DEFAULT DATA
+// ===============================
 
 const defaultData = {
-
-    journeys: [],
-
-    messages: 0,
-
-    tasksDone: 0,
-
-    streak: 1,
-
-    lastActive: null,
-
-    theme: "dark",
-
-    tasks: [
-
-        {
-            id: 1,
-            text: "Spend 30 minutes learning something new",
-            completed: false
-        },
-
-        {
-            id: 2,
-            text: "Practice one coding problem",
-            completed: false
-        },
-
-        {
-            id: 3,
-            text: "Review what you learned today",
-            completed: false
-        }
-
-    ],
-
-    history: [],
-
-    chat: []
-
+  journeys: [],
+  tasks: [],
+  history: [],
+  chatMessages: []
 };
 
 
-/* =====================================================
-   LOAD DATA
-===================================================== */
+// ===============================
+// LOAD DATA
+// ===============================
 
-let appData = loadData();
-
-
-function loadData() {
-
-    try {
-
-        const saved =
-            localStorage.getItem("evomindData");
-
-        if (saved) {
-
-            const parsed =
-                JSON.parse(saved);
-
-            return {
-                ...defaultData,
-                ...parsed
-            };
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Could not load EvoMind data:",
-            error
-        );
-
-    }
-
-    return {
-        ...defaultData
-    };
-}
+let appData = JSON.parse(
+  localStorage.getItem("evomindData")
+) || defaultData;
 
 
-/* =====================================================
-   SAVE DATA
-===================================================== */
+// Make sure all properties exist
+appData.journeys = appData.journeys || [];
+appData.tasks = appData.tasks || [];
+appData.history = appData.history || [];
+appData.chatMessages = appData.chatMessages || [];
+
+
+// ===============================
+// SAVE DATA
+// ===============================
 
 function saveData() {
-
-    localStorage.setItem(
-        "evomindData",
-        JSON.stringify(appData)
-    );
-
+  localStorage.setItem(
+    "evomindData",
+    JSON.stringify(appData)
+  );
 }
 
 
-/* =====================================================
-   PAGE NAVIGATION
-===================================================== */
+// ===============================
+// PAGE NAVIGATION
+// ===============================
 
-function showPage(pageName) {
+function showPage(pageName, clickedButton = null) {
 
-    const pages =
-        document.querySelectorAll(".page");
+  const pages = document.querySelectorAll(".page");
 
-    pages.forEach(page => {
+  pages.forEach(page => {
+    page.classList.remove("active");
+  });
 
-        page.classList.remove(
-            "active-page"
-        );
+  const selectedPage =
+    document.getElementById(pageName);
 
-    });
+  if (selectedPage) {
+    selectedPage.classList.add("active");
+  }
 
+  // Update active navigation button
+  const navItems =
+    document.querySelectorAll(".nav-item");
 
-    const selectedPage =
-        document.getElementById(
-            `page-${pageName}`
-        );
+  navItems.forEach(item => {
+    item.classList.remove("active");
+  });
 
-
-    if (selectedPage) {
-
-        selectedPage.classList.add(
-            "active-page"
-        );
-
-    }
-
-
-    const navItems =
-        document.querySelectorAll(".nav-item");
-
+  if (clickedButton) {
+    clickedButton.classList.add("active");
+  } else {
 
     navItems.forEach(item => {
 
-        item.classList.remove("active");
+      const onclickValue =
+        item.getAttribute("onclick") || "";
 
-        if (
-            item.dataset.page === pageName
-        ) {
-
-            item.classList.add("active");
-
-        }
+      if (
+        onclickValue.includes(`'${pageName}'`)
+      ) {
+        item.classList.add("active");
+      }
 
     });
 
+  }
 
-    closeSidebar();
+  // Close mobile sidebar
+  const sidebar =
+    document.querySelector(".sidebar");
 
+  if (sidebar) {
+    sidebar.classList.remove("open");
+  }
 
-    if (pageName === "journeys") {
-
-        renderJourneys();
-
-    }
-
-
-    if (pageName === "tasks") {
-
-        renderTasks();
-
-    }
-
-
-    if (pageName === "history") {
-
-        renderHistory();
-
-    }
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 }
 
 
-/* =====================================================
-   SIDEBAR
-===================================================== */
+// ===============================
+// SIDEBAR
+// ===============================
 
 function toggleSidebar() {
 
-    const sidebar =
-        document.getElementById("sidebar");
+  const sidebar =
+    document.querySelector(".sidebar");
 
+  if (sidebar) {
     sidebar.classList.toggle("open");
-
+  }
 }
 
 
-function closeSidebar() {
-
-    const sidebar =
-        document.getElementById("sidebar");
-
-    sidebar.classList.remove("open");
-
-}
-
-
-/* =====================================================
-   JOURNEY MODAL
-===================================================== */
+// ===============================
+// JOURNEY MODAL
+// ===============================
 
 function openJourneyModal() {
 
-    const modal =
-        document.getElementById(
-            "journeyModal"
-        );
+  const modal =
+    document.getElementById("journeyModal");
 
-    modal.classList.add("show");
+  if (!modal) return;
 
-    setTimeout(() => {
+  modal.classList.add("show");
 
-        document
-            .getElementById("goalInput")
-            .focus();
+  setTimeout(() => {
 
-    }, 100);
+    const input =
+      document.getElementById("journeyGoal");
 
+    if (input) {
+      input.focus();
+    }
+
+  }, 100);
 }
 
 
 function closeJourneyModal() {
 
-    const modal =
-        document.getElementById(
-            "journeyModal"
-        );
+  const modal =
+    document.getElementById("journeyModal");
 
+  if (modal) {
     modal.classList.remove("show");
-
+  }
 }
 
 
-function closeModalOutside(event) {
+// Close modal when clicking outside
+document.addEventListener("click", function(event) {
 
-    if (
-        event.target.id ===
-        "journeyModal"
-    ) {
+  const modal =
+    document.getElementById("journeyModal");
 
-        closeJourneyModal();
-
-    }
-
-}
-
-
-/* =====================================================
-   CREATE JOURNEY
-===================================================== */
-
-function createJourney() {
-
-    const goal =
-        document
-            .getElementById("goalInput")
-            .value
-            .trim();
-
-
-    const category =
-        document
-            .getElementById("categoryInput")
-            .value;
-
-
-    const dailyTime =
-        document
-            .getElementById("timeInput")
-            .value;
-
-
-    if (!goal) {
-
-        showToast(
-            "Please enter your learning goal."
-        );
-
-        document
-            .getElementById("goalInput")
-            .focus();
-
-        return;
-
-    }
-
-
-    const journey = {
-
-        id: Date.now(),
-
-        goal: goal,
-
-        category: category,
-
-        dailyTime: dailyTime,
-
-        progress: 0,
-
-        createdAt:
-            new Date().toISOString()
-
-    };
-
-
-    appData.journeys.unshift(
-        journey
-    );
-
-
-    addHistory(
-        "🎯",
-        `Created journey: ${goal}`
-    );
-
-
-    saveData();
-
+  if (
+    modal &&
+    event.target === modal
+  ) {
     closeJourneyModal();
+  }
+
+});
 
 
-    document
-        .getElementById("goalInput")
-        .value = "";
+// ===============================
+// CREATE JOURNEY
+// ===============================
+
+function createJourney(event) {
+
+  if (event) {
+    event.preventDefault();
+  }
+
+  const goalInput =
+    document.getElementById("journeyGoal");
+
+  const levelInput =
+    document.getElementById("journeyLevel");
+
+  const timeInput =
+    document.getElementById("studyTime");
+
+  if (!goalInput) {
+    showToast("Journey input not found.");
+    return;
+  }
+
+  const goal =
+    goalInput.value.trim();
+
+  const level =
+    levelInput
+      ? levelInput.value
+      : "Beginner";
+
+  const dailyTime =
+    timeInput
+      ? timeInput.value
+      : "30 minutes";
 
 
-    updateDashboard();
-
-
-    showPage("journeys");
-
+  // Check empty goal
+  if (!goal) {
 
     showToast(
-        "Journey created successfully! 🎯"
+      "Please enter your learning goal."
     );
 
+    goalInput.focus();
+
+    return;
+  }
+
+
+  // Create unique journey
+  const journey = {
+
+    id:
+      Date.now().toString(),
+
+    goal: goal,
+
+    level: level,
+
+    dailyTime: dailyTime,
+
+    progress: 0,
+
+    createdAt:
+      new Date().toISOString(),
+
+    tasks: [
+
+      {
+        id: Date.now() + 1,
+        title: `Learn the basics of ${goal}`,
+        completed: false
+      },
+
+      {
+        id: Date.now() + 2,
+        title: `Practice ${goal}`,
+        completed: false
+      },
+
+      {
+        id: Date.now() + 3,
+        title: `Build a small ${goal} project`,
+        completed: false
+      }
+
+    ]
+
+  };
+
+
+  // Add journey
+  appData.journeys.push(journey);
+
+
+  // Add tasks
+  journey.tasks.forEach(task => {
+
+    appData.tasks.push({
+
+      id: task.id,
+
+      journeyId: journey.id,
+
+      title: task.title,
+
+      completed: false
+
+    });
+
+  });
+
+
+  // Add history
+  appData.history.unshift({
+
+    id: Date.now(),
+
+    type: "journey",
+
+    message:
+      `Created a new learning journey: ${goal}`,
+
+    date:
+      new Date().toISOString()
+
+  });
+
+
+  saveData();
+
+
+  // Reset form
+  goalInput.value = "";
+
+  if (levelInput) {
+    levelInput.selectedIndex = 0;
+  }
+
+  if (timeInput) {
+    timeInput.selectedIndex = 0;
+  }
+
+
+  // Close modal
+  closeJourneyModal();
+
+
+  // Refresh UI
+  updateDashboard();
+
+  renderJourneys();
+
+  renderTasks();
+
+  renderHistory();
+
+
+  // Open journeys page
+  showPage("journeys");
+
+
+  showToast(
+    "🎉 Journey created successfully!"
+  );
 }
 
 
-/* =====================================================
-   RENDER JOURNEYS
-===================================================== */
+// ===============================
+// RENDER JOURNEYS
+// ===============================
 
 function renderJourneys() {
 
-    const container =
-        document.getElementById(
-            "journeyList"
+  const container =
+    document.getElementById("journeysGrid");
+
+  if (!container) return;
+
+
+  // Empty state
+  if (appData.journeys.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="empty-icon">🧭</div>
+
+        <h3>No learning journeys yet</h3>
+
+        <p>
+          Create your first journey
+          and start learning.
+        </p>
+
+        <button
+          class="primary-btn"
+          onclick="openJourneyModal()"
+        >
+          + Create Journey
+        </button>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    appData.journeys.map(journey => {
+
+      const journeyTasks =
+        appData.tasks.filter(
+          task =>
+            task.journeyId === journey.id
         );
 
+      const completed =
+        journeyTasks.filter(
+          task => task.completed
+        ).length;
 
-    if (!appData.journeys.length) {
+      const total =
+        journeyTasks.length;
 
-        container.innerHTML = `
+      const progress =
+        total > 0
+          ? Math.round(
+              (completed / total) * 100
+            )
+          : 0;
 
-            <div class="journey-card">
 
-                <h3>No journeys yet</h3>
+      return `
 
-                <p class="journey-time">
-                    Create your first learning journey
-                    and start making progress.
-                </p>
+        <div class="journey-card">
 
-                <button
-                    class="primary-btn small-btn"
-                    onclick="openJourneyModal()"
-                >
-                    + Create Journey
-                </button>
+          <div class="journey-card-header">
+
+            <div class="journey-icon">
+              🚀
+            </div>
+
+            <button
+              class="delete-btn"
+              onclick="deleteJourney('${journey.id}')"
+              title="Delete journey"
+            >
+              ×
+            </button>
+
+          </div>
+
+
+          <h3>
+            ${escapeHTML(journey.goal)}
+          </h3>
+
+
+          <div class="journey-meta">
+
+            <span>
+              📊 ${escapeHTML(journey.level)}
+            </span>
+
+            <span>
+              ⏱️ ${escapeHTML(journey.dailyTime)}
+            </span>
+
+          </div>
+
+
+          <div class="progress-section">
+
+            <div class="progress-info">
+
+              <span>Progress</span>
+
+              <strong>
+                ${progress}%
+              </strong>
 
             </div>
 
-        `;
+            <div class="progress-bar">
 
-        return;
+              <div
+                class="progress-fill"
+                style="width:${progress}%"
+              ></div>
+
+            </div>
+
+          </div>
+
+
+          <p class="task-info">
+            ${completed} of ${total} tasks completed
+          </p>
+
+
+          <button
+            class="secondary-btn"
+            onclick="viewJourneyTasks('${journey.id}')"
+          >
+            View Tasks →
+          </button>
+
+        </div>
+
+      `;
+
+    }).join("");
+}
+
+
+// ===============================
+// DELETE JOURNEY
+// ===============================
+
+function deleteJourney(journeyId) {
+
+  const journey =
+    appData.journeys.find(
+      item => item.id === journeyId
+    );
+
+  if (!journey) return;
+
+
+  const confirmed =
+    confirm(
+      `Delete "${journey.goal}" journey?`
+    );
+
+  if (!confirmed) return;
+
+
+  appData.journeys =
+    appData.journeys.filter(
+      item => item.id !== journeyId
+    );
+
+
+  appData.tasks =
+    appData.tasks.filter(
+      task => task.journeyId !== journeyId
+    );
+
+
+  appData.history.unshift({
+
+    id: Date.now(),
+
+    type: "journey",
+
+    message:
+      `Deleted learning journey: ${journey.goal}`,
+
+    date:
+      new Date().toISOString()
+
+  });
+
+
+  saveData();
+
+
+  renderJourneys();
+
+  renderTasks();
+
+  renderHistory();
+
+  updateDashboard();
+
+
+  showToast(
+    "Journey deleted."
+  );
+}
+
+
+// ===============================
+// VIEW JOURNEY TASKS
+// ===============================
+
+function viewJourneyTasks(journeyId) {
+
+  showPage("tasks");
+
+  setTimeout(() => {
+
+    const firstTask =
+      document.querySelector(
+        `[data-journey-id="${journeyId}"]`
+      );
+
+    if (firstTask) {
+
+      firstTask.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
 
     }
 
-
-    container.innerHTML =
-        appData.journeys
-            .map(journey => {
-
-                return `
-
-                    <div
-                        class="journey-card"
-                        data-id="${journey.id}"
-                    >
-
-                        <button
-                            class="delete-journey"
-                            onclick="deleteJourney(${journey.id})"
-                            aria-label="Delete journey"
-                        >
-                            ×
-                        </button>
-
-
-                        <span class="journey-category">
-                            ${escapeHtml(journey.category)}
-                        </span>
-
-
-                        <h3>
-                            ${escapeHtml(journey.goal)}
-                        </h3>
-
-
-                        <div class="journey-time">
-                            ◷ ${journey.dailyTime} minutes daily
-                        </div>
-
-
-                        <div class="journey-progress">
-
-                            <div
-                                class="journey-progress-fill"
-                                style="width:${journey.progress}%"
-                            ></div>
-
-                        </div>
-
-
-                        <div class="journey-footer">
-
-                            <span>Progress</span>
-
-                            <span>
-                                ${journey.progress}%
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-
+  }, 100);
 }
 
 
-/* =====================================================
-   DELETE JOURNEY
-===================================================== */
-
-function deleteJourney(id) {
-
-    const journey =
-        appData.journeys.find(
-            item => item.id === id
-        );
-
-
-    if (!journey) return;
-
-
-    const confirmed =
-        confirm(
-            "Delete this journey?"
-        );
-
-
-    if (!confirmed) return;
-
-
-    appData.journeys =
-        appData.journeys.filter(
-            item => item.id !== id
-        );
-
-
-    addHistory(
-        "🗑️",
-        `Deleted journey: ${journey.goal}`
-    );
-
-
-    saveData();
-
-    renderJourneys();
-
-    updateDashboard();
-
-    showToast(
-        "Journey deleted."
-    );
-
-}
-
-
-/* =====================================================
-   TASKS
-===================================================== */
+// ===============================
+// RENDER TASKS
+// ===============================
 
 function renderTasks() {
 
-    const container =
-        document.getElementById(
-            "taskList"
+  const container =
+    document.getElementById("tasksContainer");
+
+  if (!container) return;
+
+
+  const completedCount =
+    appData.tasks.filter(
+      task => task.completed
+    ).length;
+
+  const pendingCount =
+    appData.tasks.filter(
+      task => !task.completed
+    ).length;
+
+
+  // Update counters
+  const completedElement =
+    document.getElementById("completedTasks");
+
+  const pendingElement =
+    document.getElementById("pendingTasks");
+
+
+  if (completedElement) {
+    completedElement.textContent =
+      completedCount;
+  }
+
+  if (pendingElement) {
+    pendingElement.textContent =
+      pendingCount;
+  }
+
+
+  // Empty state
+  if (appData.tasks.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          📚
+        </div>
+
+        <h3>No tasks yet</h3>
+
+        <p>
+          Create a learning journey
+          to generate tasks.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    appData.tasks.map(task => {
+
+      const journey =
+        appData.journeys.find(
+          item =>
+            item.id === task.journeyId
         );
 
 
-    if (!appData.tasks.length) {
+      return `
 
-        container.innerHTML = `
+        <div
+          class="task-item ${task.completed ? "completed" : ""}"
+          data-journey-id="${task.journeyId}"
+        >
 
-            <p style="
-                color:#858798;
-                padding:20px 0;
-            ">
-                No tasks available.
-            </p>
-
-        `;
-
-        updateTaskProgress();
-
-        return;
-
-    }
+          <button
+            class="task-check"
+            onclick="toggleTask(${task.id})"
+            aria-label="Complete task"
+          >
+            ${task.completed ? "✓" : ""}
+          </button>
 
 
-    container.innerHTML =
-        appData.tasks
-            .map(task => {
+          <div class="task-content">
 
-                return `
+            <h4>
+              ${escapeHTML(task.title)}
+            </h4>
 
-                    <div
-                        class="task-item ${
-                            task.completed
-                                ? "completed"
-                                : ""
-                        }"
-                        onclick="toggleTask(${task.id})"
-                    >
+            ${
+              journey
+                ? `
+                  <small>
+                    🧭 ${escapeHTML(journey.goal)}
+                  </small>
+                `
+                : ""
+            }
 
-                        <div class="task-checkbox">
-                            ✓
-                        </div>
+          </div>
 
-                        <div class="task-text">
-                            ${escapeHtml(task.text)}
-                        </div>
+        </div>
 
-                    </div>
+      `;
 
-                `;
-
-            })
-            .join("");
-
-
-    updateTaskProgress();
-
+    }).join("");
 }
 
 
-/* =====================================================
-   TOGGLE TASK
-===================================================== */
+// ===============================
+// TOGGLE TASK
+// ===============================
 
-function toggleTask(id) {
+function toggleTask(taskId) {
 
-    const task =
-        appData.tasks.find(
-            item => item.id === id
-        );
+  const task =
+    appData.tasks.find(
+      item => item.id === taskId
+    );
 
-
-    if (!task) return;
-
-
-    task.completed =
-        !task.completed;
+  if (!task) return;
 
 
-    if (task.completed) {
-
-        addHistory(
-            "✓",
-            `Completed task: ${task.text}`
-        );
-
-        appData.tasksDone++;
-
-        updateStreak();
-
-    } else {
-
-        appData.tasksDone =
-            Math.max(
-                0,
-                appData.tasksDone - 1
-            );
-
-    }
+  task.completed =
+    !task.completed;
 
 
-    saveData();
-
-    renderTasks();
-
-    updateDashboard();
-
-
-    if (task.completed) {
-
-        showToast(
-            "Great job! Keep going 🔥"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   TASK PROGRESS
-===================================================== */
-
-function updateTaskProgress() {
-
-    const total =
-        appData.tasks.length;
-
-
-    const completed =
-        appData.tasks.filter(
-            task => task.completed
-        ).length;
-
-
-    const percent =
-        total === 0
-            ? 0
-            : Math.round(
-                (completed / total) * 100
-            );
-
-
-    const progress =
-        document.getElementById(
-            "taskProgress"
-        );
-
-
-    const percentage =
-        document.getElementById(
-            "taskPercent"
-        );
-
-
-    if (progress) {
-
-        progress.style.width =
-            `${percent}%`;
-
-    }
-
-
-    if (percentage) {
-
-        percentage.textContent =
-            `${percent}% complete`;
-
-    }
-
-}
-
-
-/* =====================================================
-   STREAK
-===================================================== */
-
-function updateStreak() {
-
-    const today =
-        new Date()
-            .toISOString()
-            .split("T")[0];
-
-
-    if (
-        appData.lastActive !== today
-    ) {
-
-        appData.streak =
-            Math.max(
-                1,
-                appData.streak || 1
-            );
-
-        appData.lastActive =
-            today;
-
-    }
-
-}
-
-
-/* =====================================================
-   HISTORY
-===================================================== */
-
-function addHistory(
-    icon,
-    text
-) {
+  // Add history
+  if (task.completed) {
 
     appData.history.unshift({
 
-        id: Date.now(),
+      id: Date.now(),
 
-        icon: icon,
+      type: "task",
 
-        text: text,
+      message:
+        `Completed task: ${task.title}`,
 
-        date:
-            new Date().toISOString()
+      date:
+        new Date().toISOString()
+
+    });
+
+  }
+
+
+  saveData();
+
+
+  renderTasks();
+
+  renderJourneys();
+
+  renderHistory();
+
+  updateDashboard();
+
+
+  if (task.completed) {
+
+    showToast(
+      "✅ Task completed!"
+    );
+
+  }
+
+}
+
+
+// ===============================
+// HISTORY
+// ===============================
+
+function renderHistory() {
+
+  const container =
+    document.getElementById(
+      "historyContainer"
+    );
+
+  if (!container) return;
+
+
+  if (appData.history.length === 0) {
+
+    container.innerHTML = `
+
+      <div class="empty-state">
+
+        <div class="empty-icon">
+          🕒
+        </div>
+
+        <h3>No activity yet</h3>
+
+        <p>
+          Your learning activity
+          will appear here.
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    appData.history
+      .slice(0, 30)
+      .map(item => {
+
+        return `
+
+          <div class="history-item">
+
+            <div class="history-icon">
+              ${
+                item.type === "task"
+                  ? "✅"
+                  : "🧭"
+              }
+            </div>
+
+            <div>
+
+              <p>
+                ${escapeHTML(item.message)}
+              </p>
+
+              <small>
+                ${formatDate(item.date)}
+              </small>
+
+            </div>
+
+          </div>
+
+        `;
+
+      }).join("");
+}
+
+
+// ===============================
+// DASHBOARD
+// ===============================
+
+function updateDashboard() {
+
+  const journeyCount =
+    document.getElementById(
+      "journeyCount"
+    );
+
+  const taskCount =
+    document.getElementById(
+      "taskCount"
+    );
+
+  const streakCount =
+    document.getElementById(
+      "streakCount"
+    );
+
+
+  const completedTasks =
+    appData.tasks.filter(
+      task => task.completed
+    ).length;
+
+
+  if (journeyCount) {
+
+    journeyCount.textContent =
+      appData.journeys.length;
+
+  }
+
+
+  if (taskCount) {
+
+    taskCount.textContent =
+      completedTasks;
+
+  }
+
+
+  if (streakCount) {
+
+    streakCount.textContent =
+      calculateStreak();
+
+  }
+
+}
+
+
+// ===============================
+// STREAK
+// ===============================
+
+function calculateStreak() {
+
+  const completedHistory =
+    appData.history.filter(
+      item => item.type === "task"
+    );
+
+
+  if (completedHistory.length === 0) {
+    return 0;
+  }
+
+
+  const dates = [
+    ...new Set(
+      completedHistory.map(
+        item =>
+          new Date(item.date)
+            .toISOString()
+            .split("T")[0]
+      )
+    )
+  ];
+
+
+  dates.sort(
+    (a, b) =>
+      new Date(b) - new Date(a)
+  );
+
+
+  let streak = 1;
+
+
+  for (
+    let i = 0;
+    i < dates.length - 1;
+    i++
+  ) {
+
+    const current =
+      new Date(dates[i]);
+
+    const previous =
+      new Date(dates[i + 1]);
+
+
+    const difference =
+      Math.round(
+        (
+          current - previous
+        ) /
+        (1000 * 60 * 60 * 24)
+      );
+
+
+    if (difference === 1) {
+
+      streak++;
+
+    } else {
+
+      break;
+
+    }
+
+  }
+
+
+  return streak;
+}
+
+
+// ===============================
+// AI CHAT
+// ===============================
+
+async function sendMessage() {
+
+  const input =
+    document.getElementById(
+      "chatInput"
+    );
+
+
+  if (!input) return;
+
+
+  const message =
+    input.value.trim();
+
+
+  if (!message) return;
+
+
+  // Show user message
+  addUserMessage(message);
+
+
+  input.value = "";
+
+
+  // Show loading
+  const loadingId =
+    addAIMessage(
+      "Thinking..."
+    );
+
+
+  try {
+
+    const response =
+      await fetch(
+        `${BACKEND_URL}/api/chat`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+
+            message: message,
+
+            history:
+              appData.chatMessages
+                .slice(-10)
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    removeMessage(loadingId);
+
+
+    if (
+      data.success &&
+      data.reply
+    ) {
+
+      addAIMessage(
+        data.reply
+      );
+
+    } else {
+
+      addAIMessage(
+        "Sorry, I couldn't get a response right now."
+      );
+
+    }
+
+  } catch (error) {
+
+    console.error(
+      "Chat error:",
+      error
+    );
+
+
+    removeMessage(loadingId);
+
+
+    addAIMessage(
+      "⚠️ Unable to connect to EvoMind AI. Please try again."
+    );
+
+  }
+
+}
+
+
+// ===============================
+// ADD USER MESSAGE
+// ===============================
+
+function addUserMessage(message) {
+
+  const chatContainer =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  if (!chatContainer) return;
+
+
+  const messageElement =
+    document.createElement("div");
+
+
+  messageElement.className =
+    "message user";
+
+
+  messageElement.innerHTML = `
+
+    <div class="message-bubble">
+      ${escapeHTML(message)}
+    </div>
+
+  `;
+
+
+  chatContainer.appendChild(
+    messageElement
+  );
+
+
+  chatContainer.scrollTop =
+    chatContainer.scrollHeight;
+
+
+  appData.chatMessages.push({
+
+    role: "user",
+
+    content: message
+
+  });
+
+
+  saveData();
+}
+
+
+// ===============================
+// ADD AI MESSAGE
+// ===============================
+
+function addAIMessage(message) {
+
+  const chatContainer =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  if (!chatContainer) {
+    return null;
+  }
+
+
+  const id =
+    "msg-" + Date.now();
+
+
+  const messageElement =
+    document.createElement("div");
+
+
+  messageElement.id = id;
+
+  messageElement.className =
+    "message assistant";
+
+
+  messageElement.innerHTML = `
+
+    <div class="message-avatar">
+      🤖
+    </div>
+
+    <div class="message-bubble">
+      ${escapeHTML(message)}
+    </div>
+
+  `;
+
+
+  chatContainer.appendChild(
+    messageElement
+  );
+
+
+  chatContainer.scrollTop =
+    chatContainer.scrollHeight;
+
+
+  // Don't save temporary loading message
+  if (message !== "Thinking...") {
+
+    appData.chatMessages.push({
+
+      role: "assistant",
+
+      content: message
+
+    });
+
+    saveData();
+
+  }
+
+
+  return id;
+}
+
+
+// ===============================
+// REMOVE MESSAGE
+// ===============================
+
+function removeMessage(id) {
+
+  const element =
+    document.getElementById(id);
+
+  if (element) {
+    element.remove();
+  }
+
+}
+
+
+// ===============================
+// CLEAR CHAT
+// ===============================
+
+function clearChat() {
+
+  const chatContainer =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  if (chatContainer) {
+
+    chatContainer.innerHTML = "";
+
+  }
+
+
+  appData.chatMessages = [];
+
+  saveData();
+
+
+  showToast(
+    "Chat cleared."
+  );
+}
+
+
+// ===============================
+// ENTER KEY CHAT
+// ===============================
+
+function handleChatKey(event) {
+
+  if (
+    event.key === "Enter" &&
+    !event.shiftKey
+  ) {
+
+    event.preventDefault();
+
+    sendMessage();
+
+  }
+
+}
+
+
+// ===============================
+// THEME
+// ===============================
+
+function toggleTheme() {
+
+  document.body.classList.toggle(
+    "light-theme"
+  );
+
+
+  const isLight =
+    document.body.classList.contains(
+      "light-theme"
+    );
+
+
+  localStorage.setItem(
+    "evomindTheme",
+    isLight
+      ? "light"
+      : "dark"
+  );
+
+
+  showToast(
+    isLight
+      ? "☀️ Light mode enabled"
+      : "🌙 Dark mode enabled"
+  );
+}
+
+
+// ===============================
+// LOAD THEME
+// ===============================
+
+function loadTheme() {
+
+  const savedTheme =
+    localStorage.getItem(
+      "evomindTheme"
+    );
+
+
+  if (
+    savedTheme === "light"
+  ) {
+
+    document.body.classList.add(
+      "light-theme"
+    );
+
+  }
+
+}
+
+
+// ===============================
+// TOAST
+// ===============================
+
+function showToast(message) {
+
+  const toast =
+    document.getElementById(
+      "toast"
+    );
+
+  const toastMessage =
+    document.getElementById(
+      "toastMessage"
+    );
+
+
+  if (!toast) return;
+
+
+  if (toastMessage) {
+
+    toastMessage.textContent =
+      message;
+
+  }
+
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  setTimeout(() => {
+
+    toast.classList.remove(
+      "show"
+    );
+
+  }, 3000);
+
+}
+
+
+// ===============================
+// DATE FORMAT
+// ===============================
+
+function formatDate(date) {
+
+  try {
+
+    return new Date(date)
+      .toLocaleString(
+        "en-IN",
+        {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      );
+
+  } catch {
+
+    return "";
+
+  }
+
+}
+
+
+// ===============================
+// ESCAPE HTML
+// ===============================
+
+function escapeHTML(value) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(value);
+
+  return div.innerHTML;
+}
+
+
+// ===============================
+// LOAD CHAT HISTORY
+// ===============================
+
+function loadChatHistory() {
+
+  const chatContainer =
+    document.getElementById(
+      "chatMessages"
+    );
+
+
+  if (
+    !chatContainer ||
+    appData.chatMessages.length === 0
+  ) {
+    return;
+  }
+
+
+  appData.chatMessages
+    .slice(-20)
+    .forEach(message => {
+
+      const element =
+        document.createElement("div");
+
+
+      if (
+        message.role === "user"
+      ) {
+
+        element.className =
+          "message user";
+
+        element.innerHTML = `
+
+          <div class="message-bubble">
+            ${escapeHTML(
+              message.content
+            )}
+          </div>
+
+        `;
+
+      } else {
+
+        element.className =
+          "message assistant";
+
+        element.innerHTML = `
+
+          <div class="message-avatar">
+            🤖
+          </div>
+
+          <div class="message-bubble">
+            ${escapeHTML(
+              message.content
+            )}
+          </div>
+
+        `;
+
+      }
+
+
+      chatContainer.appendChild(
+        element
+      );
 
     });
 
 
-    if (
-        appData.history.length > 50
-    ) {
-
-        appData.history =
-            appData.history.slice(
-                0,
-                50
-            );
-
-    }
-
+  chatContainer.scrollTop =
+    chatContainer.scrollHeight;
 }
 
 
-function renderHistory() {
-
-    const container =
-        document.getElementById(
-            "historyList"
-        );
-
-
-    if (!appData.history.length) {
-
-        container.innerHTML = `
-
-            <div class="history-item">
-
-                <div class="history-icon">
-                    ✦
-                </div>
-
-                <div class="history-content">
-
-                    <strong>
-                        No activity yet
-                    </strong>
-
-                    <span>
-                        Your EvoMind activity will appear here.
-                    </span>
-
-                </div>
-
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML =
-        appData.history
-            .map(item => {
-
-                return `
-
-                    <div class="history-item">
-
-                        <div class="history-icon">
-                            ${item.icon}
-                        </div>
-
-                        <div class="history-content">
-
-                            <strong>
-                                ${escapeHtml(item.text)}
-                            </strong>
-
-                            <span>
-                                ${formatDate(item.date)}
-                            </span>
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-
-}
-
-
-/* =====================================================
-   CLEAR HISTORY
-===================================================== */
-
-function clearHistory() {
-
-    if (
-        !appData.history.length
-    ) {
-
-        showToast(
-            "History is already empty."
-        );
-
-        return;
-
-    }
-
-
-    const confirmed =
-        confirm(
-            "Clear all history?"
-        );
-
-
-    if (!confirmed) return;
-
-
-    appData.history = [];
-
-    saveData();
-
-    renderHistory();
-
-    showToast(
-        "History cleared."
-    );
-
-}
-
-
-/* =====================================================
-   AI CHAT
-===================================================== */
-
-function useSuggestion(text) {
-
-    const input =
-        document.getElementById(
-            "chatInput"
-        );
-
-
-    input.value = text;
-
-    input.focus();
-
-    sendMessage();
-
-}
-
-
-function handleChatKey(event) {
-
-    if (
-        event.key === "Enter" &&
-        !event.shiftKey
-    ) {
-
-        event.preventDefault();
-
-        sendMessage();
-
-    }
-
-}
-
-
-/* =====================================================
-   SEND MESSAGE
-===================================================== */
-
-async function sendMessage() {
-
-    const input =
-        document.getElementById(
-            "chatInput"
-        );
-
-
-    const message =
-        input.value.trim();
-
-
-    if (!message) return;
-
-
-    addUserMessage(message);
-
-    input.value = "";
-
-
-    appData.messages++;
-
-    addHistory(
-        "✦",
-        `Asked EvoMind: ${message}`
+// ===============================
+// CHAT INPUT EVENT
+// ===============================
+
+function setupChatInput() {
+
+  const input =
+    document.getElementById(
+      "chatInput"
     );
 
 
-    saveData();
+  if (!input) return;
+
+
+  input.addEventListener(
+    "keydown",
+    handleChatKey
+  );
+
+}
+
+
+// ===============================
+// INITIALIZE APP
+// ===============================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function() {
+
+    loadTheme();
 
     updateDashboard();
 
+    renderJourneys();
 
-    const loadingId =
-        addLoadingMessage();
+    renderTasks();
 
+    renderHistory();
 
-    try {
+    loadChatHistory();
 
-        /*
-          Backend endpoint.
-          Later we will connect this
-          with your backend/server.js.
-        */
+    setupChatInput();
 
-       const response =
-    await fetch(
-        "https://evomind-ai-server-new.onrender.com/api/chat",
-                {
+    showPage("home");
 
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        message: message
-                    })
-
-                }
-            );
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Server error"
-            );
-
-        }
-
-
-        const data =
-            await response.json();
-
-
-        removeLoadingMessage(
-            loadingId
-        );
-
-
-        const reply =
-            data.reply ||
-            data.message ||
-            "I couldn't generate a response right now.";
-
-
-        addAIMessage(reply);
-
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        removeLoadingMessage(
-            loadingId
-        );
-
-
-        addAIMessage(
-            "I'm unable to connect to my AI server right now. Please make sure the backend is running and try again."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   CHAT UI
-===================================================== */
-
-function addUserMessage(text) {
-
-    const chat =
-        document.getElementById(
-            "chatArea"
-        );
-
-
-    const message =
-        document.createElement("div");
-
-
-    message.className =
-        "message user-message";
-
-
-    message.innerHTML = `
-
-        <div class="message-content">
-
-            ${escapeHtml(text)}
-
-        </div>
-
-    `;
-
-
-    chat.appendChild(message);
-
-    scrollChat();
-
-}
-
-
-function addAIMessage(text) {
-
-    const chat =
-        document.getElementById(
-            "chatArea"
-        );
-
-
-    const message =
-        document.createElement("div");
-
-
-    message.className =
-        "message ai-message";
-
-
-    message.innerHTML = `
-
-        <div class="message-avatar">
-            E
-        </div>
-
-        <div class="message-content">
-
-            <strong>EvoMind</strong>
-
-            <p>
-                ${formatAIText(text)}
-            </p>
-
-        </div>
-
-    `;
-
-
-    chat.appendChild(message);
-
-    scrollChat();
-
-}
-
-
-function addLoadingMessage() {
-
-    const chat =
-        document.getElementById(
-            "chatArea"
-        );
-
-
-    const id =
-        "loading-" + Date.now();
-
-
-    const message =
-        document.createElement("div");
-
-
-    message.id = id;
-
-    message.className =
-        "message ai-message";
-
-
-    message.innerHTML = `
-
-        <div class="message-avatar">
-            E
-        </div>
-
-        <div class="message-content">
-
-            <strong>EvoMind</strong>
-
-            <p>
-                Thinking...
-            </p>
-
-        </div>
-
-    `;
-
-
-    chat.appendChild(message);
-
-    scrollChat();
-
-
-    return id;
-
-}
-
-
-function removeLoadingMessage(id) {
-
-    const element =
-        document.getElementById(id);
-
-
-    if (element) {
-
-        element.remove();
-
-    }
-
-}
-
-
-function scrollChat() {
-
-    const chat =
-        document.getElementById(
-            "chatArea"
-        );
-
-
-    chat.scrollTop =
-        chat.scrollHeight;
-
-}
-
-
-/* =====================================================
-   CLEAR CHAT
-===================================================== */
-
-function clearChat() {
-
-    const chat =
-        document.getElementById(
-            "chatArea"
-        );
-
-
-    chat.innerHTML = `
-
-        <div class="message ai-message">
-
-            <div class="message-avatar">
-                E
-            </div>
-
-            <div class="message-content">
-
-                <strong>
-                    Hey! I'm EvoMind 👋
-                </strong>
-
-                <p>
-                    Tell me what you're learning or
-                    what you're struggling with, and
-                    I'll help you move forward.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div class="suggestions">
-
-            <button
-                onclick="useSuggestion('Explain JavaScript simply')"
-            >
-                Explain JavaScript simply
-            </button>
-
-            <button
-                onclick="useSuggestion('Make me a study plan')"
-            >
-                Make me a study plan
-            </button>
-
-            <button
-                onclick="useSuggestion('Help me prepare for an interview')"
-            >
-                Help me prepare for an interview
-            </button>
-
-        </div>
-
-    `;
-
-
-    showToast(
-        "Chat cleared."
-    );
-
-}/* =====================================================
-   DASHBOARD
-===================================================== */
-
-function updateDashboard() {
-
-    const journeyCount =
-        document.getElementById(
-            "homeJourneys"
-        );
-
-
-    const tasksDone =
-        document.getElementById(
-            "homeTasksDone"
-        );
-
-
-    const streak =
-        document.getElementById(
-            "homeStreak"
-        );
-
-
-    const messages =
-        document.getElementById(
-            "homeMessages"
-        );
-
-
-    if (journeyCount) {
-
-        journeyCount.textContent =
-            appData.journeys.length;
-
-    }
-
-
-    if (tasksDone) {
-
-        tasksDone.textContent =
-            appData.tasksDone;
-
-    }
-
-
-    if (streak) {
-
-        streak.textContent =
-            appData.streak;
-
-    }
-
-
-    if (messages) {
-
-        messages.textContent =
-            appData.messages;
-
-    }
-
-
-    const sidebarStreak =
-        document.getElementById(
-            "sidebarStreak"
-        );
-
-
-    if (sidebarStreak) {
-
-        sidebarStreak.textContent =
-            `${appData.streak} day`;
-
-    }
-
-
-    const taskStreak =
-        document.getElementById(
-            "taskStreak"
-        );
-
-
-    if (taskStreak) {
-
-        taskStreak.textContent =
-            `${appData.streak} day streak`;
-
-    }
-
-}
-
-
-/* =====================================================
-   THEME
-===================================================== */
-
-function toggleTheme() {
-
-    if (appData.theme === "dark") {
-        appData.theme = "light";
-    } else {
-        appData.theme = "dark";
-    }
-
-    saveData();
-    applyTheme();
-
-    showToast(
-        appData.theme === "light"
-            ? "Light mode enabled ☀️"
-            : "Dark mode enabled 🌙"
-    );
-}
-
-
-function applyTheme() {
-
-    document.body.dataset.theme =
-        appData.theme || "dark";
-
-
-    const appearanceButton =
-        document.querySelector(".appearance-btn");
-
-
-    if (appearanceButton) {
-
-        const icon =
-            appearanceButton.querySelector("span:first-child");
-
-        if (appData.theme === "light") {
-
-            if (icon) {
-                icon.textContent = "☀";
-            }
-
-            appearanceButton
-                .querySelector("span:last-child")
-                .textContent = "Dark Mode";
-
-        } else {
-
-            if (icon) {
-                icon.textContent = "☾";
-            }
-
-            appearanceButton
-                .querySelector("span:last-child")
-                .textContent = "Appearance";
-
-        }
-
-    }
-
-}
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-let toastTimer;
-
-
-function showToast(message) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.add("show");
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        }, 2500);
-
-}
-
-
-/* =====================================================
-   DATE FORMAT
-===================================================== */
-
-function formatDate(dateString) {
-
-    const date =
-        new Date(dateString);
-
-
-    return date.toLocaleString(
-        "en-IN",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit"
-        }
-    );
-
-}
-
-
-/* =====================================================
-   SECURITY HELPER
-===================================================== */
-
-function escapeHtml(value) {
-
-    const div =
-        document.createElement("div");
-
-
-    div.textContent =
-        String(value);
-
-
-    return div.innerHTML;
-
-}
-
-
-/* =====================================================
-   SIMPLE AI TEXT FORMATTER
-===================================================== */
-
-function formatAIText(text) {
-
-    return escapeHtml(text)
-        .replace(
-            /\*\*(.*?)\*\*/g,
-            "<strong>$1</strong>"
-        )
-        .replace(
-            /\n/g,
-            "<br>"
-        );
-
-}
-
-
-/* =====================================================
-   INITIALIZE
-===================================================== */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        applyTheme();
-
-        updateDashboard();
-
-        renderTasks();
-
-        renderJourneys();
-
-        renderHistory();
-
-        showPage("home");
-
-    }
+  }
 );
